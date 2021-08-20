@@ -6,10 +6,10 @@ from sklearn import metrics
 import joblib
 import numpy as np
 
-from . import dispatcher
+import dispatcher
 
-TEST_DATA = os.environ.get("TEST_DATA")
-MODEL = os.environ.get("MODEL")
+TEST_DATA = "input/test.csv"    #os.environ.get("TEST_DATA")
+MODEL = "XGBRegressor"   #os.environ.get("MODEL")
 
 def predict():
     df = pd.read_csv(TEST_DATA)
@@ -30,7 +30,7 @@ def predict():
         clf = joblib.load(os.path.join("models", f"{MODEL}_{FOLD}.pkl"))
         
         df = df[cols]
-        preds = clf.predict_proba(df)[:, 1]
+        preds = clf.predict(df)
 
         if FOLD == 0:
             predictions = preds
