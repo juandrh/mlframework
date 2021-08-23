@@ -5,15 +5,12 @@ from sklearn import preprocessing
 from sklearn import metrics
 import joblib
 
-import dispatcher
+from . import dispatcher
 
-TRAINING_DATA = "input/train_folds.csv" #os.environ.get("TRAINING_DATA")
-TEST_DATA = "input/test.csv"    #os.environ.get("TEST_DATA")
-FOLD = 0   # int(os.environ.get("FOLD"))
-MODEL = "XGBRegressor"   #os.environ.get("MODEL")
-
-
-
+TRAINING_DATA = os.environ.get("TRAINING_DATA")
+TEST_DATA = os.environ.get("TEST_DATA")
+FOLD = int(os.environ.get("FOLD"))
+MODEL = os.environ.get("MODEL")
 
 FOLD_MAPPPING = {
     0: [1, 2, 3, 4],
@@ -40,7 +37,12 @@ if __name__ == "__main__":
     label_encoders = {}
     for c in train_df.columns:
         lbl = preprocessing.LabelEncoder()
-        lbl.fit(train_df[c].values.tolist() + valid_df[c].values.tolist() + df_test[c].values.tolist())
+        train_df.loc[:, c] = train_df.loc[:, c].astype(str).fillna("NONE")
+        valid_df.loc[:, c] = valid_df.loc[:, c].astype(str).fillna("NONE")
+        df_test.loc[:, c] = df_test.loc[:, c].astype(str).fillna("NONE")
+        lbl.fit(train_df[c].values.tolist() + 
+                valid_df[c].values.tolist() + 
+                df_test[c].values.tolist())
         train_df.loc[:, c] = lbl.transform(train_df[c].values.tolist())
         valid_df.loc[:, c] = lbl.transform(valid_df[c].values.tolist())
         label_encoders[c] = lbl
@@ -48,8 +50,8 @@ if __name__ == "__main__":
     # data is ready to train
     clf = dispatcher.MODELS[MODEL]
     clf.fit(train_df, ytrain)
-    preds = clf.predict(valid_df)
-    print(metrics.mean_squared_error(yvalid, preds))
+    preds = clf.predict_proba(valid_df)[:, 1]
+    print(metrics.roc_auc_score(yvalid, preds))
 
     joblib.dump(label_encoders, f"models/{MODEL}_{FOLD}_label_encoder.pkl")
     joblib.dump(clf, f"models/{MODEL}_{FOLD}.pkl")
