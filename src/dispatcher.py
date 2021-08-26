@@ -29,27 +29,27 @@ MODELS = {
 
 BEST_MODELS = {}
 
-def set_best_models(num_models):
+def get_best_models(num_models):
     for model in range(num_models):
-        nombre_modelo = str(MODELS[MODEL]).split("(")[0]
-        print(nombre_modelo)
+
         best_params = joblib.load(os.path.join(f"models/model{MODEL}__{FOLD}_best_params.pkl"))
 
+        # change best_params format
+        model_name = str(MODELS[MODEL]).split("(")[0]          
         bp=str(best_params)
         bp=bp.replace("{","(")
         bp=bp.replace("}",")")
         bp=bp.replace(":","=")
         bp=bp.replace("'","")    
-
-        modelo = nombre_modelo + bp
+        model_name = model_name + bp
         
-        BEST_MODELS[model+1]=modelo
+        # add to dict
+        BEST_MODELS[model+1] = model_name
 
+        return BEST_MODELS
 
-def get_model():
-    print(BEST_MODELS)
 
 if __name__ == "__main__":
 
-   set_best_models(1) 
-   get_model()
+   print(get_best_models(1))
+  
