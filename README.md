@@ -1,3 +1,3 @@
-# Machine learning framework by [Abhishek Thakur](https://github.com/abhishekkrthakur/mlframework)
+# Machine learning framework base on [Abhishek Thakur ML Framework](https://github.com/abhishekkrthakur/mlframework)
 
 
