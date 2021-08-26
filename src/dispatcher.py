@@ -1,5 +1,10 @@
 from sklearn import ensemble
 from xgboost import XGBRegressor
+import joblib
+import os
+
+FOLD = int(os.environ.get("FOLD"))
+MODEL = int(os.environ.get("MODEL"))
 
 
 MODELS = {
@@ -20,3 +25,31 @@ MODELS = {
     2: ensemble.ExtraTreesClassifier(n_estimators=200, n_jobs=-1, verbose=2),   #"extratrees"
     3: "extratrees"
 }
+
+
+BEST_MODELS = {}
+
+def set_best_models(num_models):
+    for model in range(num_models):
+        nombre_modelo = str(MODELS[MODEL]).split("(")[0]
+        print(nombre_modelo)
+        best_params = joblib.load(os.path.join(f"models/model{MODEL}__{FOLD}_best_params.pkl"))
+
+        bp=str(best_params)
+        bp=bp.replace("{","(")
+        bp=bp.replace("}",")")
+        bp=bp.replace(":","=")
+        bp=bp.replace("'","")    
+
+        modelo = nombre_modelo + bp
+        
+        BEST_MODELS[model+1]=modelo
+
+
+def get_model():
+    print(BEST_MODELS)
+
+if __name__ == "__main__":
+
+   set_best_models(1) 
+   get_model()
