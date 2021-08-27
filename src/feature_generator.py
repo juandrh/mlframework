@@ -12,9 +12,9 @@ from sklearn import preprocessing
 def process_features(df,cat_columns, num_columns, create_new = True):  # if create_new = True --> only Ordinal encoding
 
     if create_new:
-        print("Creating new features")
+        print("Creating new features", end=" - ")
     else:
-        print("Encoding features")
+        print("Encoding features", end=" - ")
 
     if  create_new:
 
@@ -48,6 +48,6 @@ def process_features(df,cat_columns, num_columns, create_new = True):  # if crea
     for c in useful_features:
         final_df["_"+str(c)]=final_df[c] 
 
-    print("Done!")
+    print("Done!", end=" - ")
     return final_df
 
