@@ -10,9 +10,9 @@ clear
 
 #python3 -m src.train
 
-#python3 -m src.hyperparam_opt
+python3 -m src.hyperparam_opt
 
-python3 -m src.predict
+#python3 -m src.predict
 
 #python3 -m src.dispatcher
 

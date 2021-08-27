@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from sklearn import ensemble
 from sklearn import preprocessing
-from sklearn import metrics
 from xgboost import XGBRegressor
 import joblib
 from sklearn.metrics import mean_squared_error
