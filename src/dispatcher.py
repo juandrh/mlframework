@@ -1,5 +1,11 @@
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVR
+from sklearn.tree import DecisionTreeRegressor
 from sklearn import ensemble
 from xgboost import XGBRegressor
+import lightgbm as lgb
+from sklearn.neural_network import MLPRegressor
+
 import joblib
 import os
 
@@ -8,8 +14,15 @@ MODEL = int(os.environ.get("MODEL"))
 
 
 MODELS = {
-    0: ensemble.RandomForestClassifier(n_estimators=200, n_jobs=-1, verbose=2),  #"randomforest"
-    1: XGBRegressor(random_state=42, 
+    0: LinearRegression (n_jobs=-1),
+    1: SVR(kernel='rbf', gamma='auto',degree=3,C =1.0),
+    2: DecisionTreeRegressor(
+                        criterion='mse',
+                        random_state=42,
+                        splitter='best'),
+    3: ensemble.RandomForestRegressor(n_estimators = 300,max_depth=2, n_jobs=-1 ,random_state = 42),
+    4: ensemble.GradientBoostingRegressor(random_state=42,learning_rate=1.0,n_estimators=50,),
+    5: XGBRegressor(random_state=42, 
                          n_jobs=-1,
                          n_estimators= 5234,
                          tree_method='gpu_hist',
@@ -22,8 +35,30 @@ MODELS = {
                          eval_metric='rmse',
                          predictor='gpu_predictor',
                          objective='reg:squarederror'),
-    2: ensemble.ExtraTreesClassifier(n_estimators=200, n_jobs=-1, verbose=2),   #"extratrees"
-    3: "extratrees"
+    6: lgb.LGBMRegressor (boosting_type='gbdt',
+                        metric='rmse',
+                        n_jobs=-1, 
+                        verbose=-1,
+                        random_state=42,
+                        n_estimators= 2683,
+                        learning_rate= 0.010250629304555186,
+                        num_leaves= 79,
+                        max_depth= 256,
+                        subsample= 0.7778732709684482,
+                        subsample_freq= 9,
+                        colsample_bytree= 0.35917838955653647,
+                        reg_lambda= 2.943257012154159,
+                        reg_alpha= 2.416846681288718                     
+                        ) ,
+    7:MLPRegressor(                    
+                    alpha=1e-2,
+                    hidden_layer_sizes=(150,100,50),
+                    random_state=42,                        
+                    max_iter = 100,
+                    activation ='relu',
+                    solver = 'sgd',                    
+                    learning_rate ='adaptive',
+                    ) 
 }
 
 

@@ -1,9 +1,9 @@
 import os
 import pandas as pd
 import numpy as np
-from sklearn import ensemble
+#from sklearn import ensemble
 from sklearn import preprocessing
-from xgboost import XGBRegressor
+#from xgboost import XGBRegressor
 import joblib
 from sklearn.metrics import mean_squared_error
 from . import dispatcher
@@ -33,6 +33,7 @@ if __name__ == "__main__":
     df = df.drop(df[df['target'].lt(6)].index)
     print("Dropped ",300000-len(df), " target outliers")
     print("Num. folds: ",FOLD)
+    print("Model: ",str(dispatcher.MODELS[MODEL]).split("(")[0])
 
     # process features
     new_df=feature_generator.process_features(df,object_cols,numerical_cols,False)
@@ -41,12 +42,12 @@ if __name__ == "__main__":
 
     useful_features = [c for c in new_df.columns if (c not in ("id", "target", "kfold") and str(c).startswith('_'))]
     numerical_cols = [col for col in useful_features if str(col).startswith('_cont')]
-    new_df_test = new_df_test[useful_features]
-    print(useful_features)
+    new_df_test = new_df_test[useful_features]    
    
     final_predictions = []
     scores=[]
-
+    print("\n")
+    
     # cross validation loop
     for fold in range(FOLD):
         xtrain =  new_df[new_df.kfold != fold].reset_index(drop=True)
@@ -58,7 +59,6 @@ if __name__ == "__main__":
         
         xtrain = xtrain[useful_features]
         xvalid = xvalid[useful_features]
-
    
         # standarization
 

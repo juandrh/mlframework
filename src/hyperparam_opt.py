@@ -3,7 +3,13 @@ import os
 import numpy as np
 from sklearn import preprocessing
 from sklearn.metrics import mean_squared_error
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVR
+from sklearn.tree import DecisionTreeRegressor
+from sklearn import ensemble
 from xgboost import XGBRegressor
+import lightgbm as lgb
+from sklearn.neural_network import MLPRegressor
 import joblib
 import optuna
 from . import feature_generator
@@ -19,17 +25,29 @@ FOLD = int(os.environ.get("FOLD"))
 MODEL = int(os.environ.get("MODEL"))
 
 def run(trial):
+    if MODEL == 5:
+        print("\nXGBRegressor")
+        # XGBRegressor parameter gaps 
+        n_estimators = trial.suggest_int("n_estimators", 1000, 8000)
+        learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
+        reg_lambda = trial.suggest_loguniform("reg_lambda", 1e-8, 100.0)
+        reg_alpha = trial.suggest_loguniform("reg_alpha", 1e-8, 100.0)
+        subsample = trial.suggest_float("subsample", 0.1, 1.0)
+        colsample_bytree = trial.suggest_float("colsample_bytree", 0.1, 1.0)
+        max_depth = trial.suggest_int("max_depth", 1, 7)
+    if MODEL == 6:
+        print("\nLGBMRegressor")
+        # XGBRegressor parameter gaps 
+        n_estimators = trial.suggest_int("n_estimators", 1000, 8000)
+        learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
+        reg_lambda = trial.suggest_loguniform("reg_lambda", 1e-8, 100.0)
+        reg_alpha = trial.suggest_loguniform("reg_alpha", 1e-8, 100.0)
+        subsample = trial.suggest_float("subsample", 0.1, 1.0)
+        colsample_bytree = trial.suggest_float("colsample_bytree", 0.1, 1.0)
+        max_depth = trial.suggest_int("max_depth", 1, 256)
+        num_leaves= trial.suggest_int("num_leaves",1,100)
+            
 
-    # XGBRegressor parameter gaps 
-    n_estimators = trial.suggest_int("n_estimators", 1000, 8000)
-    learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
-    reg_lambda = trial.suggest_loguniform("reg_lambda", 1e-8, 100.0)
-    reg_alpha = trial.suggest_loguniform("reg_alpha", 1e-8, 100.0)
-    subsample = trial.suggest_float("subsample", 0.1, 1.0)
-    colsample_bytree = trial.suggest_float("colsample_bytree", 0.1, 1.0)
-    max_depth = trial.suggest_int("max_depth", 1, 7)
-
-    
     scores=[]
     for fold in range(FOLD):        
         xtrain = new_df[new_df.kfold != fold].reset_index(drop=True)
@@ -49,17 +67,31 @@ def run(trial):
 
         print(fold,end=" - ")
 
-        # change model selecction by hand             
-        model = XGBRegressor(random_state=42,n_jobs=-1,tree_method='gpu_hist',
-                         eval_metric='rmse',predictor='gpu_predictor',
-                         n_estimators=n_estimators,
-                         learning_rate=learning_rate,
-                         subsample= subsample,
-                         max_depth=max_depth,
-                         colsample_bytree= colsample_bytree,
-                         reg_lambda = reg_lambda,
-                         reg_alpha = reg_alpha,                 
-                         objective='reg:squarederror')
+        # change model selecction by hand 
+        # 
+        if MODEL == 5:            
+            model = XGBRegressor(random_state=42,n_jobs=-1,tree_method='gpu_hist',
+                            eval_metric='rmse',predictor='gpu_predictor',
+                            n_estimators=n_estimators,
+                            learning_rate=learning_rate,
+                            subsample= subsample,
+                            max_depth=max_depth,
+                            colsample_bytree= colsample_bytree,
+                            reg_lambda = reg_lambda,
+                            reg_alpha = reg_alpha,                 
+                            objective='reg:squarederror')
+        if MODEL == 6:            
+            model = lgb.LGBMRegressor(random_state=42,n_jobs=-1,
+                            eval_metric='rmse',
+                            n_estimators=n_estimators,
+                            learning_rate=learning_rate,
+                            subsample= subsample,
+                            max_depth=max_depth,
+                            colsample_bytree= colsample_bytree,
+                            reg_lambda = reg_lambda,
+                            reg_alpha = reg_alpha,          
+                            num_leaves = num_leaves,
+                            )
 
         model.fit(xtrain, ytrain)  
         preds_valid = model.predict(xvalid)
