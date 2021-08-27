@@ -82,7 +82,7 @@ def run(trial):
                             objective='reg:squarederror')
         if MODEL == 6:            
             model = lgb.LGBMRegressor(random_state=42,n_jobs=-1,
-                            eval_metric='rmse',
+                            metrics ='rmse',
                             n_estimators=n_estimators,
                             learning_rate=learning_rate,
                             subsample= subsample,
