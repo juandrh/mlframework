@@ -25,7 +25,7 @@ def predict(test_data_path, model_type, model_path):
         df = pd.read_csv(test_data_path)        
         encoders = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_label_encoder.pkl"))
         cols = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_columns.pkl"))        
-        model = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_.pkl"))(**best_params)
+        model = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_.pkl"))
         print(f"Model {fold}_{FOLD} loaded", end=" - ")
 
         

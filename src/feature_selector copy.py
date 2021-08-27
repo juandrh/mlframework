@@ -18,7 +18,6 @@ from sklearn import preprocessing
 from BorutaShap import BorutaShap
 
 from . import dispatcher
-from . import feature_generator
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
@@ -29,32 +28,61 @@ print("Libs imported")
 if __name__ == "__main__":
 
     df = pd.read_csv(TRAINING_DATA)
-    print("Data loaded")
 
+    print("Data loaded")
     useful_features = [c for c in df.columns if c not in ("id", "target", "kfold")]
     object_cols = [col for col in useful_features if 'cat' in col]
     numerical_cols = [col for col in useful_features if 'cont' in col]
 
 
-    """ df = df.drop(df[df['target'].lt(6)].index)
+    df = df.drop(df[df['target'].lt(6)].index)
     print("Dropped ",300000-len(df), " target outliers")
-    print("Num. folds: ",FOLD) """
+    print("Num. folds: ",FOLD)
 
+    
+    """ 
+    label_encoders = {}
+    for c in object_cols:
+        lbl = preprocessing.LabelEncoder()
+        df.loc[:, c] = df.loc[:, c].astype(str).fillna("NONE")        
+        df_test.loc[:, c] = df_test.loc[:, c].astype(str).fillna("NONE")
+        lbl.fit(df[c].values.tolist() +
+                df_test[c].values.tolist())
+        df.loc[:, c] = lbl.transform(df[c].values.tolist())        
+        label_encoders[c] = lbl """
 
-    # standarization numerical features 
+    # standarization
+
     scaler = preprocessing.StandardScaler()
     df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
     
-    # generate and process features
-    final_df=feature_generator.process_features(df,object_cols,numerical_cols)
+    # One hot encode categorical columns
+    OH_encoder = preprocessing.OneHotEncoder(handle_unknown='ignore', sparse=False)
+    OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(df[object_cols]))
 
-    useful_features = [c for c in final_df.columns if (c not in ("id", "target", "kfold") and str(c).startswith('_'))]       
-    print("Usefull features= ",useful_features)
+    # codificador one-hot elimina; ponerlo de nuevo 
+    OH_cols_train.index = df.index
 
-    selected_columns = list()    
+    # label encode categorical columns
+    ordinal_encoder = preprocessing.OrdinalEncoder()
+    df[object_cols] = ordinal_encoder.fit_transform(df[object_cols])
+
+    #  añadir columnas codificadas one-hot a variables numéricas 
+    after_OH_df = pd.concat([df, OH_cols_train], axis=1)
+
+    useful_features = [c for c in after_OH_df.columns if c not in ("id", "target", "kfold")]   
+    
+    for c in useful_features:
+        after_OH_df["n_"+str(c)]=after_OH_df[c]
+     
+    useful_features = [c for c in after_OH_df.columns if str(c).startswith('n_')]
+
+    selected_columns = list()
+
+    
 
     for fold in range(FOLD):
-        xtrain =  final_df[final_df.kfold != fold].reset_index(drop=True)
+        xtrain =  after_OH_df[after_OH_df.kfold != fold].reset_index(drop=True)
 
         ytrain = xtrain.target        
         xtrain = xtrain[useful_features]     

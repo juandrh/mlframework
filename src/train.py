@@ -113,7 +113,7 @@ if __name__ == "__main__":
         scores.append(rmse)
 
         joblib.dump(label_encoders, f"models/model{MODEL}_{fold}_{FOLD}_label_encoder.pkl")
-        joblib.dump(clf, f"models/model{MODEL}_{fold}_{FOLD}_.pkl")
+        joblib.dump(model, f"models/model{MODEL}_{fold}_{FOLD}_.pkl")
         joblib.dump(after_OH_xtrain.columns, f"models/model{MODEL}_{fold}_{FOLD}_columns.pkl")
     
     print (np.mean(scores),np.std(scores))
