@@ -15,12 +15,6 @@ from time import time
 import pprint
 import joblib
 from functools import partial
-# Suppressing warnings because of skopt verbosity
-import warnings
-warnings.filterwarnings("ignore")
-
-# Model selection
-from sklearn.model_selection import KFold
 
 import optuna
 

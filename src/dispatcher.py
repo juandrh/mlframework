@@ -29,9 +29,10 @@ MODELS = {
 
 BEST_MODELS = {}
 
+# create a dict from the optimized models 
 def get_best_models(num_models):
     for model in range(num_models):
-
+        
         best_params = joblib.load(os.path.join(f"models/model{MODEL}__{FOLD}_best_params.pkl"))
 
         # change best_params format

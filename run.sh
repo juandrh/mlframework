@@ -14,7 +14,8 @@ clear
 
 #python3 -m src.predict
 
-python3 -m src.dispatcher
+#python3 -m src.dispatcher
 
+python3 -m src.feature_selector
 # 5folds  0.7083991545362129
 # 10folds 0.7081404817771173
