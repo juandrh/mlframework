@@ -25,7 +25,7 @@ def predict(test_data_path, model_type, model_path):
         df = pd.read_csv(test_data_path)        
         encoders = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_label_encoder.pkl"))
         cols = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_columns.pkl"))        
-        clf = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_.pkl"))(**best_params)
+        model = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_.pkl"))(**best_params)
         print(f"Model {fold}_{FOLD} loaded", end=" - ")
 
         
@@ -60,7 +60,7 @@ def predict(test_data_path, model_type, model_path):
         #  añadir columnas codificadas one-hot a variables numéricas 
         after_OH_test= pd.concat([num_X_test, OH_cols_test], axis=1) 
 
-        test_preds = clf.predict(after_OH_test)
+        test_preds = model.predict(after_OH_test)
         final_predictions.append(test_preds)
         print("Prediction done.")
           

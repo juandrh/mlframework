@@ -99,20 +99,20 @@ def run(trial):
         # data is ready to train
 
         print(fold,end=" - ")
-        clf = dispatcher.MODELS[MODEL]
-        clf.fit(after_OH_xtrain, ytrain)
+        model = dispatcher.MODELS[MODEL]
+        model.fit(after_OH_xtrain, ytrain)
         
         #print(metrics.roc_auc_score(yvalid, preds))
 
-        preds_valid = clf.predict(after_OH_valid)
-        test_preds = clf.predict(after_OH_test)
+        preds_valid = model.predict(after_OH_valid)
+        test_preds = model.predict(after_OH_test)
         final_predictions.append(test_preds)
         rmse = mean_squared_error(yvalid, preds_valid, squared=False)
         print(rmse)
         scores.append(rmse)
 
     return np.mean(scores)
-change
+
 
 if __name__ == "__main__":
 
