@@ -1,7 +1,7 @@
 export TRAINING_DATA=input/train_10folds.csv
 export TEST_DATA=input/test.csv
 export FOLD=10    # same as TRAINING_DATA
-export MODEL=4    # select actual model
+export MODEL=5    # select actual model
 clear
 
 # python3 -m src.best_models
@@ -24,14 +24,14 @@ clear
 # -------------------------------
 # Step 4: Train with best hyperparameters ------
 # -------------------------------
-python3 -m src.train
+#python3 -m src.train
 
 # -------------------------------
 # Step 5: Predict ------
 # -------------------------------
 #python3 -m src.predict
 
-
+#python3 -m src.blender
 
 
 #python3 -m src.dispatcher
