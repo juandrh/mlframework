@@ -1,22 +1,9 @@
-# Importing core libraries
 import numpy as np
 import pandas as pd
-#import pprint
-#from functools import partial
 import os
-
-# Classifier/Regressor
-from xgboost import XGBRegressor
-
-# Feature selection
+import joblib
 from BorutaShap import BorutaShap
-
-# Data processing
 from sklearn import preprocessing
-
-# Feature selection
-from BorutaShap import BorutaShap
-
 from . import dispatcher
 from . import feature_generator
 
@@ -46,14 +33,14 @@ if __name__ == "__main__":
     df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
     
     # generate and process features
-    final_df=feature_generator.process_features(df,object_cols,numerical_cols)
+    final_df=feature_generator.process_features(df,object_cols,numerical_cols,False)
 
     useful_features = [c for c in final_df.columns if (c not in ("id", "target", "kfold") and str(c).startswith('_'))]       
     print("Usefull features= ",useful_features)
 
     selected_columns = list()    
 
-    for fold in range(FOLD):
+    for fold in range(1):   
         xtrain =  final_df[final_df.kfold != fold].reset_index(drop=True)
 
         ytrain = xtrain.target        
@@ -80,9 +67,13 @@ if __name__ == "__main__":
         
  
     final_selection = sorted({item for selection in selected_columns for item in selection})
+
+    # save to file
+    joblib.dump(final_selection, f"models/model{MODEL}_{FOLD}_features.pkl")
+
     print(final_selection)
 
 
-    
+  # model 4 descartaer -->'_cat4', '_cat6', '_cat9', '_cat7', '_cat2'
   
 

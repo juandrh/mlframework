@@ -25,9 +25,14 @@ FOLD = int(os.environ.get("FOLD"))
 MODEL = int(os.environ.get("MODEL"))
 
 def run(trial):
+    # parameter gaps 
+    if MODEL == 4:
+        print("\nGradientBoostingRegressor")
+        n_estimators = trial.suggest_int("n_estimators", 50, 100)
+        learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
+
     if MODEL == 5:
-        print("\nXGBRegressor")
-        # XGBRegressor parameter gaps 
+        print("\nXGBRegressor")        
         n_estimators = trial.suggest_int("n_estimators", 1000, 8000)
         learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
         reg_lambda = trial.suggest_loguniform("reg_lambda", 1e-8, 100.0)
@@ -36,8 +41,7 @@ def run(trial):
         colsample_bytree = trial.suggest_float("colsample_bytree", 0.1, 1.0)
         max_depth = trial.suggest_int("max_depth", 1, 7)
     if MODEL == 6:
-        print("\nLGBMRegressor")
-        # XGBRegressor parameter gaps 
+        print("\nLGBMRegressor")        
         n_estimators = trial.suggest_int("n_estimators", 1000, 8000)
         learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
         reg_lambda = trial.suggest_loguniform("reg_lambda", 1e-8, 100.0)
@@ -69,6 +73,13 @@ def run(trial):
 
         # change model selecction by hand 
         # 
+
+
+        if MODEL == 4:
+            model = ensemble.GradientBoostingRegressor(
+                            random_state=42,
+                            learning_rate=learning_rate,
+                            n_estimators=n_estimators)
         if MODEL == 5:            
             model = XGBRegressor(random_state=42,n_jobs=-1,tree_method='gpu_hist',
                             eval_metric='rmse',predictor='gpu_predictor',
@@ -104,7 +115,7 @@ def run(trial):
 
 if __name__ == "__main__":
 
-    df = pd.read_csv(TRAINING_DATA) 
+    df = pd.read_csv(TRAINING_DATA)    
     print("Data loaded")
 
     useful_features = [c for c in df.columns if c not in ("id", "target", "kfold")]
@@ -118,12 +129,19 @@ if __name__ == "__main__":
 
     # process features
     new_df=feature_generator.process_features(df,object_cols,numerical_cols,False)
-    useful_features = [c for c in new_df.columns if (c not in ("id", "target", "kfold") and str(c).startswith('_'))]
+
+    try:
+        useful_features= joblib.load(f"models/model{MODEL}_{FOLD}_features.pkl")
+        print("It will use best features only.") 
+    except:
+        print("No best features found -> it will use all of them.") 
+        useful_features = [c for c in new_df.columns if (c not in ("id", "target", "kfold") and str(c).startswith('_'))]
+
     numerical_cols = [col for col in useful_features if str(col).startswith('_cont')]
    
     # Start study 
     study = optuna.create_study(direction="minimize")
-    study.optimize(run, n_trials=30)
+    study.optimize(run, n_trials=15)
 
     print("\n")
     print(study.best_params)

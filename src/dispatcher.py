@@ -1,6 +1,9 @@
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn import linear_model
 from sklearn import ensemble
 from xgboost import XGBRegressor
 import lightgbm as lgb
@@ -15,13 +18,34 @@ MODEL = int(os.environ.get("MODEL"))
 
 MODELS = {
     0: LinearRegression (n_jobs=-1),
-    1: SVR(kernel='rbf', gamma='auto',degree=3,C =1.0),
-    2: DecisionTreeRegressor(
+    1: HistGradientBoostingRegressor(
+                        loss='least_squares',
+                        learning_rate=0.1, 
+                        max_iter=100,
+                        max_leaf_nodes=31, 
+                        l2_regularization=0.0, 
+                        max_bins=255, 
+                        verbose=0,
+                        random_state=42),
+    2: linear_model.BayesianRidge(
+                       n_iter=300,
+                        tol=0.001, 
+                        alpha_1=1e-06, 
+                        alpha_2=1e-06, 
+                        lambda_1=1e-06,
+                         lambda_2=1e-06),
+    3: ensemble.ExtraTreesRegressor(
+                        n_estimators=100,
                         criterion='mse',
+                        max_depth=None, 
+                        min_samples_split=2,
+                        min_samples_leaf=1,
+                        min_weight_fraction_leaf=0.0,         
+                        n_jobs=-1, random_state=42, verbose=0),    
+    4: ensemble.GradientBoostingRegressor(
                         random_state=42,
-                        splitter='best'),
-    3: ensemble.RandomForestRegressor(n_estimators = 300,max_depth=2, n_jobs=-1 ,random_state = 42),
-    4: ensemble.GradientBoostingRegressor(random_state=42,learning_rate=1.0,n_estimators=50,),
+                        learning_rate=0.06,
+                        n_estimators=36),
     5: XGBRegressor(random_state=42, 
                          n_jobs=-1,
                          n_estimators= 5234,
