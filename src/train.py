@@ -90,11 +90,11 @@ if __name__ == "__main__":
 
     print (np.mean(scores),np.std(scores))
     final_valid_predictions = pd.DataFrame.from_dict(final_valid_predictions, orient="index").reset_index()
-    final_valid_predictions.columns = ["id", "pred_1"]
+    final_valid_predictions.columns = ["id", f"pred_{MODEL}"]
     final_valid_predictions.to_csv(f"output/model{MODEL}_{FOLD}_train_pred.csv", index=False)
 
     sample_submission.target = np.mean(np.column_stack(final_test_predictions), axis=1)
-    sample_submission.columns = ["id", "pred_1"]
+    sample_submission.columns = ["id", f"pred_{MODEL}"]
     sample_submission.to_csv(f"output/model{MODEL}_{FOLD}_test_pred.csv", index=False)
 
 

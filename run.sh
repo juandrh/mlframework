@@ -1,7 +1,7 @@
 export TRAINING_DATA=input/train_10folds.csv
 export TEST_DATA=input/test.csv
 export FOLD=10    # same as TRAINING_DATA
-export MODEL=3    # select actual model
+export MODEL=4    # select actual model
 clear
 
 # python3 -m src.best_models
