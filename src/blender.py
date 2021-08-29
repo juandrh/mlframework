@@ -9,7 +9,7 @@ from . import dispatcher
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
-FOLD = int(os.environ.get("FOLD"))
+FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 
@@ -32,8 +32,8 @@ if __name__ == "__main__":
     useful_features = []
     #for model,_ in dispatcher.MODELS([0,1,2,3,4]):
     for model in range(5):
-        dfs.append(pd.read_csv(f"output/model{model}_{FOLD}_train_pred.csv"))
-        dfs_test.append(pd.read_csv(f"output/model{model}_{FOLD}_test_pred.csv"))
+        dfs.append(pd.read_csv(f"output/model{model}_{FOLDS}_train_pred.csv"))
+        dfs_test.append(pd.read_csv(f"output/model{model}_{FOLDS}_test_pred.csv"))
         df = df.merge(dfs[model], on="id", how="left")
         df_test = df_test.merge(dfs_test[model], on="id", how="left")
         useful_features.append(f"pred_{model}")
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     final_predictions = []
     scores = []
-    for fold in range(FOLD):
+    for fold in range(FOLDS):
         xtrain =  df[df.kfold != fold].reset_index(drop=True)
         xvalid = df[df.kfold == fold].reset_index(drop=True)
         xtest = df_test.copy()

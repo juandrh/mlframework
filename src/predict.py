@@ -9,7 +9,7 @@ from . import dispatcher
 from . import feature_generator
 
 TEST_DATA = os.environ.get("TEST_DATA")
-FOLD = int(os.environ.get("FOLD"))
+FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 """
@@ -22,12 +22,12 @@ def predict(test_data_path, model_type, model_path):
 
     final_predictions = []   
         
-    for fold in range(FOLD):
+    for fold in range(FOLDS):
         df = pd.read_csv(test_data_path)        
 
         #cols = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_columns.pkl"))        
-        model = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLD}_.pkl"))
-        print(f"Model {fold}_{FOLD} loaded", end=" - ")
+        model = joblib.load(os.path.join(model_path, f"model{model_type}_{fold}_{FOLDS}_.pkl"))
+        print(f"Model {fold}_{FOLDS} loaded", end=" - ")
 
         useful_features = [c for c in df.columns if c not in ("id", "target", "kfold")]
         object_cols = [col for col in useful_features if 'cat' in col]
@@ -64,6 +64,6 @@ if __name__ == "__main__":
                          model_path="models/")
     
     sample_submission.target = submission
-    sample_submission.to_csv(f"models/model{MODEL}_submission.csv", index=False)   
+    sample_submission.to_csv(f"output/model{MODEL}_submission.csv", index=False)   
     print("Submission saved")
 

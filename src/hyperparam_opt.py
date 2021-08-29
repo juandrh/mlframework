@@ -21,7 +21,7 @@ from . import feature_generator
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
-FOLD = int(os.environ.get("FOLD"))
+FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 def run(trial):
@@ -53,7 +53,7 @@ def run(trial):
             
 
     scores=[]
-    for fold in range(FOLD):        
+    for fold in range(FOLDS):        
         xtrain = new_df[new_df.kfold != fold].reset_index(drop=True)
         xvalid = new_df[new_df.kfold == fold].reset_index(drop=True)  
         ytrain = xtrain.target
@@ -123,15 +123,17 @@ if __name__ == "__main__":
     numerical_cols = [col for col in useful_features if 'cont' in col]
 
     # drop outliers from targer colummn
-    df = df.drop(df[df['target'].lt(6)].index)
-    print("Dropped ",300000-len(df), " target outliers")
-    print("Num. folds: ",FOLD)
+    # df = df.drop(df[df['target'].lt(6)].index)
+    # print("Dropped ",300000-len(df), " target outliers")
+    # print("Num. folds: ",FOLD)
+
+    
 
     # process features
-    new_df=feature_generator.process_features(df,object_cols,numerical_cols,False)
+    new_df=feature_generator.process_features(df,object_cols,numerical_cols,True)
 
     try:
-        useful_features= joblib.load(f"models/model{MODEL}_{FOLD}_features.pkl")
+        useful_features= joblib.load(f"models/model{MODEL}_{FOLDS}_features.pkl")
         print("It will use best features only.") 
     except:
         print("No best features found -> it will use all of them.") 
@@ -141,13 +143,13 @@ if __name__ == "__main__":
    
     # Start study 
     study = optuna.create_study(direction="minimize")
-    study.optimize(run, n_trials=15)
+    study.optimize(run, n_trials=100)
 
     print("\n")
     print(study.best_params)
 
     # save to file best parameters found
-    joblib.dump(study.best_params, f"models/model{MODEL}__{FOLD}_best_params.pkl")
+    joblib.dump(study.best_params, f"models/model{MODEL}__{FOLDS}_best_params.pkl")
 
     print("Best params saved")
     

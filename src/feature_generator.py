@@ -1,5 +1,4 @@
 # Importing core libraries
-import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
@@ -10,24 +9,36 @@ from sklearn import preprocessing
 """
 
 def process_features(df,cat_columns, num_columns, create_new = True):  # if create_new = True --> only Ordinal encoding
-
+    
     if create_new:
         print("Creating new features", end=" - ")
     else:
         print("Encoding features", end=" - ")
 
-    if  create_new:
+    if create_new:
 
         # NUMERICAL FEATURES
         # polynomial features
         poly = preprocessing.PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
-        data_poly = poly.fit_transform(df[num_columns])    
-        df_poly = pd.DataFrame(data_poly, columns= [f"poly_{i}" for i in range(data_poly.shape[1])])   
-        df = pd.concat([df, df_poly], axis = 1)
+        data_poly = poly.fit_transform(df[num_columns])  
+        
+        df_poly = pd.DataFrame(data_poly, columns= [f"poly_{i}" for i in range(data_poly.shape[1])])  
+        
+        df_poly.index = df.index 
+       
+        
+        df = pd.concat([df, df_poly], axis= 1)
+           
+      
+
+       
+        
    
         # CATEGORICAL FEATURES
         #  one hot encoding    
         OH_encoder = preprocessing.OneHotEncoder(handle_unknown='ignore', sparse=False)
+
+        
         OH_cols_df = pd.DataFrame(OH_encoder.fit_transform(df[cat_columns]))
 
         # put index back

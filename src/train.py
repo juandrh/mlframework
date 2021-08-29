@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import time
 #from sklearn import ensemble
 from sklearn import preprocessing
 #from xgboost import XGBRegressor
@@ -8,6 +9,7 @@ import joblib
 from sklearn.metrics import mean_squared_error
 from . import dispatcher
 from . import feature_generator
+from . import utils
 
 """
     For training model using Cross Validation
@@ -15,15 +17,18 @@ from . import feature_generator
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
-FOLD = int(os.environ.get("FOLD"))
+FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 if __name__ == "__main__":
 
+    start_time=time.perf_counter()
     df = pd.read_csv(TRAINING_DATA)
     df_test = pd.read_csv(TEST_DATA)
     sample_submission = pd.read_csv("input/sample_submission.csv")
     print("Data loaded")
+
+
 
     useful_features = [c for c in df.columns if c not in ("id", "target", "kfold")]
     object_cols = [col for col in useful_features if 'cat' in col]
@@ -33,7 +38,7 @@ if __name__ == "__main__":
     # Deleting outliers from target column
     df = df.drop(df[df['target'].lt(6)].index)
     print("Dropped ",300000-len(df), " target outliers")
-    print("Num. folds: ",FOLD)
+    print("Num. folds: ",FOLDS)
     print("Model: ",str(dispatcher.MODELS[MODEL]).split("(")[0])
 
     # process features
@@ -52,7 +57,7 @@ if __name__ == "__main__":
     
 
     # cross validation loop
-    for fold in range(FOLD):
+    for fold in range(FOLDS):
         xtrain =  new_df[new_df.kfold != fold].reset_index(drop=True)
         xvalid = new_df[new_df.kfold == fold].reset_index(drop=True)
         xtest = new_df_test.copy()
@@ -63,6 +68,10 @@ if __name__ == "__main__":
         
         xtrain = xtrain[useful_features]
         xvalid = xvalid[useful_features]
+
+            #prueba --------------------------
+        xtrain = utils.reduce_mem_usage(xtrain, verbose=True)
+        xvalid = utils.reduce_mem_usage(xvalid, verbose=True)
    
         # standarization
 
@@ -85,17 +94,18 @@ if __name__ == "__main__":
         final_valid_predictions.update(dict(zip(valid_ids, preds_valid)))
 
         # save model to file
-        joblib.dump(model, f"models/model{MODEL}_{fold}_{FOLD}_.pkl")        
+        joblib.dump(model, f"models/model{MODEL}_{fold}_{FOLDS}_.pkl")        
     
-
+   
+    print(f"Time elapsed {round(time.perf_counter()-start_time,2)} s.")
     print (np.mean(scores),np.std(scores))
     final_valid_predictions = pd.DataFrame.from_dict(final_valid_predictions, orient="index").reset_index()
     final_valid_predictions.columns = ["id", f"pred_{MODEL}"]
-    final_valid_predictions.to_csv(f"output/model{MODEL}_{FOLD}_train_pred.csv", index=False)
+    final_valid_predictions.to_csv(f"output/model{MODEL}_{FOLDS}_train_pred.csv", index=False)
 
     sample_submission.target = np.mean(np.column_stack(final_test_predictions), axis=1)
     sample_submission.columns = ["id", f"pred_{MODEL}"]
-    sample_submission.to_csv(f"output/model{MODEL}_{FOLD}_test_pred.csv", index=False)
+    sample_submission.to_csv(f"output/model{MODEL}_{FOLDS}_test_pred.csv", index=False)
 
 
 

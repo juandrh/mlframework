@@ -12,7 +12,7 @@ from sklearn.neural_network import MLPRegressor
 import joblib
 import os
 
-FOLD = int(os.environ.get("FOLD"))
+FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 
@@ -48,17 +48,19 @@ MODELS = {
                         n_estimators=36),
     5: XGBRegressor(random_state=42, 
                          n_jobs=-1,
-                         n_estimators= 5234,
+                         n_estimators= 4960,
                          tree_method='gpu_hist',
-                         learning_rate= 0.08970028112557221,
-                         subsample= 0.9487438254800091,
-                         max_depth= 2,
-                         colsample_bytree= 0.3685425845467418,
-                         reg_lambda = 9.309499343828611e-07,
-                         reg_alpha = 23.955318691526553,
+                         learning_rate= 0.01045096933547486,
+                         subsample= 0.6552623032213263,
+                         max_depth= 5,
+                         colsample_bytree= 0.30400808495326426,
+                         reg_lambda = 2.9474945793883e-05,
+                         reg_alpha = 1.8587942758653168e-08,
                          eval_metric='rmse',
                          predictor='gpu_predictor',
                          objective='reg:squarederror'),
+
+                         
     6: lgb.LGBMRegressor (boosting_type='gbdt',
                         metric='rmse',
                         n_jobs=-1, 
@@ -92,7 +94,7 @@ BEST_MODELS = {}
 def get_best_models(num_models):
     for model in range(num_models):
         
-        best_params = joblib.load(os.path.join(f"models/model{MODEL}__{FOLD}_best_params.pkl"))
+        best_params = joblib.load(os.path.join(f"models/model{MODEL}__{FOLDS}_best_params.pkl"))
 
         # change best_params format
         model_name = str(MODELS[MODEL]).split("(")[0]          
