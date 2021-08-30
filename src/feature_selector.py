@@ -9,7 +9,7 @@ from . import feature_generator
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
-FOLD = int(os.environ.get("FOLD"))
+FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 print("Libs imported")
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         xtrain = xtrain[useful_features]     
            
         # data is ready to train
-        print(fold," / ",FOLD)
+        print(fold," / ",FOLDS)
 
         model = dispatcher.MODELS[MODEL]            
       
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     final_selection = sorted({item for selection in selected_columns for item in selection})
 
     # save to file
-    joblib.dump(final_selection, f"models/model{MODEL}_{FOLD}_features.pkl")
+    joblib.dump(final_selection, f"models/model{MODEL}_{FOLDS}_features.pkl")
 
     print(final_selection)
 

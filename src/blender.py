@@ -31,7 +31,7 @@ if __name__ == "__main__":
     dfs_test = []
     useful_features = []
     #for model,_ in dispatcher.MODELS([0,1,2,3,4]):
-    for model in range(5):
+    for model in range(8):
         dfs.append(pd.read_csv(f"output/model{model}_{FOLDS}_train_pred.csv"))
         dfs_test.append(pd.read_csv(f"output/model{model}_{FOLDS}_test_pred.csv"))
         df = df.merge(dfs[model], on="id", how="left")
@@ -59,20 +59,20 @@ if __name__ == "__main__":
         xtrain = xtrain.fillna(0)
         xvalid = xvalid.fillna(0)   
   
-        #model = LinearRegression()
-        model = XGBRegressor(random_state=42, 
-                         n_jobs=-1,
-                         n_estimators= 1000,
-                         tree_method='gpu_hist',
-                         learning_rate= 0.08970028112557221,
-                         subsample= 0.9487438254800091,
-                         max_depth= 2,
-                         colsample_bytree= 0.3685425845467418,
-                         reg_lambda = 9.309499343828611e-07,
-                         reg_alpha = 23.955318691526553,
-                         eval_metric='rmse',
-                         predictor='gpu_predictor',
-                         objective='reg:squarederror')
+        model = LinearRegression()
+        # model = XGBRegressor(random_state=42, 
+        #                  n_jobs=-1,
+        #                  n_estimators= 1000,
+        #                  tree_method='gpu_hist',
+        #                  learning_rate= 0.08970028112557221,
+        #                  subsample= 0.9487438254800091,
+        #                  max_depth= 2,
+        #                  colsample_bytree= 0.3685425845467418,
+        #                  reg_lambda = 9.309499343828611e-07,
+        #                  reg_alpha = 23.955318691526553,
+        #                  eval_metric='rmse',
+        #                  predictor='gpu_predictor',
+        #                  objective='reg:squarederror')
         model.fit(xtrain, ytrain)
         
         preds_valid = model.predict(xvalid)
@@ -87,4 +87,5 @@ if __name__ == "__main__":
     sample_submission.target = np.mean(np.column_stack(final_predictions), axis=1)
     sample_submission.to_csv("submission_blended.csv", index=False)
     print("Submission from blended models saved")
+    print(model.coef_)
 

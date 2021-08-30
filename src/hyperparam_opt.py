@@ -7,6 +7,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 from sklearn import ensemble
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingRegressor
 from xgboost import XGBRegressor
 import lightgbm as lgb
 from sklearn.neural_network import MLPRegressor
@@ -26,6 +28,13 @@ MODEL = int(os.environ.get("MODEL"))
 
 def run(trial):
     # parameter gaps 
+    if MODEL == 1:
+        print("\nHistGradientBoostingRegressor")
+        max_iter = trial.suggest_int("max_iter", 50, 200)
+        learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
+        max_leaf_nodes = trial.suggest_int("max_leaf_nodes", 25, 200)
+        max_bins = trial.suggest_int("max_bins", 25, 300)
+
     if MODEL == 4:
         print("\nGradientBoostingRegressor")
         n_estimators = trial.suggest_int("n_estimators", 50, 100)
@@ -73,7 +82,16 @@ def run(trial):
 
         # change model selecction by hand 
         # 
-
+        if MODEL == 1:
+            model = HistGradientBoostingRegressor(
+                        loss='least_squares',
+                        learning_rate=learning_rate, 
+                        max_iter=max_iter,
+                        max_leaf_nodes=max_leaf_nodes, 
+                        l2_regularization=0.0, 
+                        max_bins=max_bins, 
+                        verbose=0,
+                        random_state=42)
 
         if MODEL == 4:
             model = ensemble.GradientBoostingRegressor(
