@@ -33,7 +33,7 @@ def run(trial):
         max_iter = trial.suggest_int("max_iter", 50, 200)
         learning_rate = trial.suggest_float("learning_rate", 1e-2, 0.25, log=True)
         max_leaf_nodes = trial.suggest_int("max_leaf_nodes", 25, 200)
-        max_bins = trial.suggest_int("max_bins", 25, 300)
+        max_bins = trial.suggest_int("max_bins", 2, 255)
 
     if MODEL == 4:
         print("\nGradientBoostingRegressor")

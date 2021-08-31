@@ -1,7 +1,9 @@
+# Run in terminal:  sh run.sh
+
 export TRAINING_DATA=input/train_10folds.csv
 export TEST_DATA=input/test.csv
 export FOLDS=10    # same as TRAINING_DATA
-export MODEL=1    # select actual model
+export MODEL=7    # select actual model
 clear
 
 # python3 -m src.best_models
@@ -19,7 +21,7 @@ clear
 # -------------------------------
 # Step 3: Select best hyperparameters ------
 # -------------------------------
-python3 -m src.hyperparam_opt
+#python3 -m src.hyperparam_opt
 
 # -------------------------------
 # Step 4: Train with best hyperparameters ------
@@ -38,8 +40,10 @@ python3 -m src.hyperparam_opt
 
 #python3 -m src.utils
 
+python3 -m src.automl
+#python3 -m src.tpot_pipeline
 
 #  0.71427606010154
 # with type reduction  0.7091925651810564 310.4 s. 0.7085267794064445
 
-#
+#GBRegressor(input_matrix, learning_rate=0.1, max_depth=4, min_child_weight=13, n_estimators=100, n_jobs=1, objective=reg:squarederror, subsample=0.8, verbosity=0)

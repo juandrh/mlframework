@@ -2,19 +2,13 @@ import pandas as pd
 import numpy as np
 import os
 from sklearn.linear_model import LinearRegression
-from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error
-from . import dispatcher
 
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
 FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
-
-
-
-
 
 if __name__ == "__main__":
 
@@ -30,7 +24,7 @@ if __name__ == "__main__":
     dfs = []
     dfs_test = []
     useful_features = []
-    #for model,_ in dispatcher.MODELS([0,1,2,3,4]):
+    
     for model in range(8):
         dfs.append(pd.read_csv(f"output/model{model}_{FOLDS}_train_pred.csv"))
         dfs_test.append(pd.read_csv(f"output/model{model}_{FOLDS}_test_pred.csv"))
