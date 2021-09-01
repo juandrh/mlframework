@@ -8,19 +8,13 @@ from . import feature_generator
 from . import utils
 
 """
-    For training model using Cross Validation
+    For training model after using AutoML Tpot 
 """
 
 TRAINING_DATA = os.environ.get("TRAINING_DATA")
 TEST_DATA = os.environ.get("TEST_DATA")
 FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -30,8 +24,6 @@ if __name__ == "__main__":
     df_test = pd.read_csv(TEST_DATA)
     sample_submission = pd.read_csv("input/sample_submission.csv")
     print("Data loaded")
-
-
 
     useful_features = [c for c in df.columns if c not in ("id", "target", "kfold")]
     object_cols = [col for col in useful_features if 'cat' in col]

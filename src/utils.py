@@ -16,7 +16,7 @@ TRAINING_DATA = os.environ.get("TRAINING_DATA")
 # :df pandas dataframe to reduce size             # type: pd.DataFrame()
 # :verbose                                        # type: bool
 def reduce_mem_usage(df, verbose=True):
-    #print(df.info())   
+    print(df.info())   
     
     start_mem = df.memory_usage().sum() / 1024**2     
     numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
@@ -44,7 +44,7 @@ def reduce_mem_usage(df, verbose=True):
 
     end_mem = df.memory_usage().sum() / 1024**2    
     if verbose: print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
-    #print(df.info())
+    print(df.info())
     return df
 
 

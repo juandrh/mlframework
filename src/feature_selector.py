@@ -22,12 +22,6 @@ if __name__ == "__main__":
     object_cols = [col for col in useful_features if 'cat' in col]
     numerical_cols = [col for col in useful_features if 'cont' in col]
 
-
-    """ df = df.drop(df[df['target'].lt(6)].index)
-    print("Dropped ",300000-len(df), " target outliers")
-    print("Num. folds: ",FOLD) """
-
-
     # standarization numerical features 
     scaler = preprocessing.StandardScaler()
     df[numerical_cols] = scaler.fit_transform(df[numerical_cols])

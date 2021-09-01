@@ -67,7 +67,7 @@ if __name__ == "__main__":
         xtrain = xtrain[useful_features]
         xvalid = xvalid[useful_features]
 
-            #prueba --------------------------
+        # Data memory size reduction
         xtrain = utils.reduce_mem_usage(xtrain, verbose=True)
         xvalid = utils.reduce_mem_usage(xvalid, verbose=True)
    

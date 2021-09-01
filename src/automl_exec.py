@@ -15,6 +15,11 @@ FOLDS = int(os.environ.get("FOLDS"))
 MODEL = int(os.environ.get("MODEL"))
 
 
+"""
+    Seaeching por best model using Automl TPot
+
+"""
+
 
 
 if __name__ == "__main__":
@@ -25,13 +30,6 @@ if __name__ == "__main__":
     useful_features = [c for c in df.columns if c not in ("id", "target", "kfold")]
     object_cols = [col for col in useful_features if 'cat' in col]
     numerical_cols = [col for col in useful_features if 'cont' in col]
-
-    # drop outliers from targer colummn
-    # df = df.drop(df[df['target'].lt(6)].index)
-    # print("Dropped ",300000-len(df), " target outliers")
-    # print("Num. folds: ",FOLD)
-
-    
 
     # process features
     new_df=feature_generator.process_features(df,object_cols,numerical_cols,False)
@@ -46,16 +44,12 @@ if __name__ == "__main__":
             xtrain = xtrain[useful_features]
 
 
-                #prueba --------------------------
+            # Data memory size reduction
             xtrain = utils.reduce_mem_usage(xtrain, verbose=True)
-
     
             # standarization
-
             scaler = preprocessing.StandardScaler()
             xtrain[numerical_cols] = scaler.fit_transform(xtrain[numerical_cols])
-
-
 
             # create & fit TPOT classifier with 
             tpot = TPOTRegressor(generations=50, population_size=80, 
@@ -63,7 +57,7 @@ if __name__ == "__main__":
             tpot.fit(xtrain, ytrain)
 
             # save our model code
-            tpot.export('tpot_pipeline.py')
+            tpot.export('automl_results.py')
 
 
 

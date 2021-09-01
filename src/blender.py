@@ -79,7 +79,7 @@ if __name__ == "__main__":
     print(np.mean(scores), np.std(scores))
 
     sample_submission.target = np.mean(np.column_stack(final_predictions), axis=1)
-    sample_submission.to_csv("submission_blended.csv", index=False)
+    sample_submission.to_csv("output/submission_blended.csv", index=False)
     print("Submission from blended models saved")
     print(model.coef_)
 

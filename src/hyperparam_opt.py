@@ -140,13 +140,6 @@ if __name__ == "__main__":
     object_cols = [col for col in useful_features if 'cat' in col]
     numerical_cols = [col for col in useful_features if 'cont' in col]
 
-    # drop outliers from targer colummn
-    # df = df.drop(df[df['target'].lt(6)].index)
-    # print("Dropped ",300000-len(df), " target outliers")
-    # print("Num. folds: ",FOLD)
-
-    
-
     # process features
     new_df=feature_generator.process_features(df,object_cols,numerical_cols,True)
 
