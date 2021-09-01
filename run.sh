@@ -6,7 +6,11 @@ export FOLDS=10    # same as TRAINING_DATA
 export MODEL=7    # select actual model
 clear
 
-# python3 -m src.best_models
+
+
+# Step 1: searching for best baseline models ------
+# -------------------------------
+python3 -m src.best_models
 
 # -------------------------------
 # Step 1: split in k folds ------
@@ -40,7 +44,7 @@ clear
 
 #python3 -m src.utils
 
-python3 -m src.automl
+#python3 -m src.automl
 #python3 -m src.tpot_pipeline
 
 #  0.71427606010154

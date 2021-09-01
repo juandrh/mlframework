@@ -5,9 +5,15 @@ import lazypredict
 from lazypredict import Supervised
 from lazypredict.Supervised import LazyRegressor
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.model_selection import train_test_split
 
 
+"""
+    Using LazyRegressor for searching best models with given data
+    This is a baseline aproximation
+
+    Author:  Sanskar Hasija (https://www.kaggle.com/odins0n/30dml-comparison-of-36-different-models)
+
+"""
 
 
 if __name__ == "__main__":
